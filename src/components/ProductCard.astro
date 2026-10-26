@@ -1,0 +1,76 @@
+---
+import { Image } from 'astro:assets';
+import { categoryLabel } from '../config/catalog';
+import { discountPercent, formatPrice } from '../lib/format';
+import { productUrl, type Product } from '../lib/products';
+
+interface Props {
+  product: Product;
+  index?: number;
+  // Shares the image with the product page during navigation. Only one card per product on a page may set it.
+  morph?: boolean;
+  sizes?: string;
+}
+
+const { product, index = 0, morph = true, sizes = '(min-width: 1024px) 25vw, 50vw' } = Astro.props;
+const { data } = product;
+const [front, back] = data.images;
+const off = discountPercent(data.price, data.mrp);
+---
+
+<article
+  data-card
+  data-reveal
+  data-sizes={data.sizes.join('|')}
+  data-price={data.price}
+  data-new={data.newArrival ? 1 : 0}
+  data-index={index}
+  style={`--i:${index % 4}`}
+  class="group"
+>
+  <a href={productUrl(product)} class="block">
+    <div class="relative aspect-4/5 overflow-hidden rounded-2xl bg-sand">
+      <Image
+        src={front}
+        alt={data.name}
+        widths={[360, 540, 720]}
+        sizes={sizes}
+        class="size-full object-cover transition-transform duration-1200 ease-out-expo group-hover:scale-[1.04]"
+        style={morph ? `view-transition-name: product-${product.id}` : undefined}
+      />
+      {
+        back && (
+          <Image
+            src={back}
+            alt=""
+            aria-hidden="true"
+            widths={[360, 540, 720]}
+            sizes={sizes}
+            class="absolute inset-0 size-full object-cover opacity-0 transition-[opacity,scale] duration-700 ease-out-expo group-hover:scale-[1.04] group-hover:opacity-100"
+          />
+        )
+      }
+      <div class="absolute top-3 left-3 flex gap-1.5">
+        {data.newArrival && <span class="rounded-full bg-ivory/90 px-2.5 py-1 text-[0.65rem] font-semibold tracking-wider uppercase">New</span>}
+        {off > 0 && <span class="rounded-full bg-terracotta px-2.5 py-1 text-[0.65rem] font-semibold tracking-wider text-ivory">−{off}%</span>}
+      </div>
+      {
+        !data.inStock && (
+          <div class="absolute inset-x-3 bottom-3 rounded-full bg-espresso/85 py-1.5 text-center text-xs font-semibold tracking-wider text-ivory uppercase">
+            Sold out
+          </div>
+        )
+      }
+    </div>
+    <div class="mt-4 flex flex-col gap-1.5 sm:flex-row sm:items-start sm:justify-between sm:gap-3">
+      <div class="min-w-0">
+        <h3 class="font-serif text-base leading-snug transition-colors group-hover:text-terracotta sm:text-lg">{data.name}</h3>
+        <p class="mt-0.5 text-xs text-muted">{categoryLabel(data.gender, data.category)}</p>
+      </div>
+      <div class="flex shrink-0 items-baseline gap-2 sm:block sm:text-right">
+        <p class="text-sm font-semibold">{formatPrice(data.price)}</p>
+        {off > 0 && <p class="text-xs text-muted line-through">{formatPrice(data.mrp!)}</p>}
+      </div>
+    </div>
+  </a>
+</article>

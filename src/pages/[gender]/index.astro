@@ -1,0 +1,21 @@
+---
+import type { GetStaticPaths } from 'astro';
+import ShopView from '../../components/ShopView.astro';
+import { catalog, genders, type Gender } from '../../config/catalog';
+import Base from '../../layouts/Base.astro';
+import { getProducts } from '../../lib/products';
+
+export const getStaticPaths = (() => genders.map((gender) => ({ params: { gender } }))) satisfies GetStaticPaths;
+
+const gender = Astro.params.gender as Gender;
+const { label, blurb, categories } = catalog[gender];
+const products = await getProducts({ gender });
+const links = [
+  { label: `All ${label.toLowerCase()}`, href: `/${gender}`, current: true },
+  ...Object.entries(categories).map(([key, l]) => ({ label: l, href: `/${gender}/${key}` })),
+];
+---
+
+<Base title={`${label}'s collection`} description={blurb}>
+  <ShopView eyebrow={`${label}'s collection`} title={label} intro={blurb} products={products} links={links} />
+</Base>

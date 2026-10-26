@@ -1,0 +1,25 @@
+---
+const steps = [
+  { title: 'Pick your pieces', text: 'Browse the collection, choose your size and add what you love to your bag.' },
+  { title: 'Send on WhatsApp', text: 'Checkout opens WhatsApp with your order already written. Just tap send.' },
+  { title: 'We confirm & deliver', text: 'We reply to confirm availability, payment and delivery — then it’s on its way.' },
+];
+---
+
+<section id="how-to-order" class="container-x scroll-mt-24 py-20 sm:py-28">
+  <div class="max-w-xl" data-reveal>
+    <p class="eyebrow">How ordering works</p>
+    <h2 class="mt-3 text-4xl sm:text-5xl">Simple as sending a message</h2>
+  </div>
+  <ol class="mt-14 grid gap-10 md:grid-cols-3 md:gap-8">
+    {
+      steps.map((s, i) => (
+        <li class="relative border-t border-line pt-8" data-reveal style={`--i:${i}`}>
+          <span class="font-serif text-6xl font-light text-terracotta/80 italic">0{i + 1}</span>
+          <h3 class="mt-4 text-2xl">{s.title}</h3>
+          <p class="mt-2 text-sm leading-relaxed text-muted">{s.text}</p>
+        </li>
+      ))
+    }
+  </ol>
+</section>

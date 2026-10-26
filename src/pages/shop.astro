@@ -1,0 +1,16 @@
+---
+import ShopView from '../components/ShopView.astro';
+import { catalog, genders } from '../config/catalog';
+import Base from '../layouts/Base.astro';
+import { getProducts } from '../lib/products';
+
+const products = await getProducts();
+const links = [
+  { label: 'Everything', href: '/shop', current: true },
+  ...genders.map((g) => ({ label: catalog[g].label, href: `/${g}` })),
+];
+---
+
+<Base title="Shop all" description="Browse every Zeya piece — sarees, kurtis, western wear, shirts, tees and trousers.">
+  <ShopView eyebrow="The collection" title="Shop all" intro="Every piece, straight from our workshop to you." products={products} links={links} />
+</Base>

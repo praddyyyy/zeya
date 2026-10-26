@@ -1,0 +1,9 @@
+---
+interface Props {
+  class?: string;
+}
+const { class: className = 'text-2xl' } = Astro.props;
+---
+
+<!-- Letter-spacing adds trailing space; the matching left padding keeps the word optically centred. -->
+<span class:list={['font-serif font-normal tracking-[0.38em] pl-[0.38em] leading-none uppercase', className]}>Zeya</span>

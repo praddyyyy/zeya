@@ -1,0 +1,56 @@
+---
+import { catalog, genders } from '../config/catalog';
+import { site } from '../config/site';
+import { enquiryUrl } from '../scripts/whatsapp';
+import WhatsAppIcon from './WhatsAppIcon.astro';
+import Wordmark from './Wordmark.astro';
+
+const year = new Date().getFullYear();
+---
+
+<footer class="bg-espresso text-ivory/80">
+  <div class="container-x grid gap-12 py-16 md:grid-cols-12 md:py-20">
+    <div class="md:col-span-5">
+      <Wordmark class="text-4xl text-ivory" />
+      <p class="mt-6 max-w-sm text-sm leading-relaxed">{site.description}</p>
+      <a href={enquiryUrl()} target="_blank" rel="noopener" class="btn btn-whatsapp mt-8">
+        <WhatsAppIcon /> Chat with us
+      </a>
+    </div>
+
+    {
+      genders.map((g) => (
+        <div class="md:col-span-2">
+          <p class="mb-4 text-[0.7rem] font-semibold tracking-[0.22em] text-gold uppercase">{catalog[g].label}</p>
+          <ul class="space-y-2.5 text-sm">
+            {Object.entries(catalog[g].categories).map(([key, label]) => (
+              <li>
+                <a href={`/${g}/${key}`} class="link-underline hover:text-ivory">
+                  {label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))
+    }
+
+    <div class="md:col-span-3">
+      <p class="mb-4 text-[0.7rem] font-semibold tracking-[0.22em] text-gold uppercase">Help</p>
+      <ul class="space-y-2.5 text-sm">
+        <li><a href="/contact#how-to-order" class="link-underline hover:text-ivory">How to order</a></li>
+        <li><a href="/contact#faq" class="link-underline hover:text-ivory">Shipping & returns</a></li>
+        <li><a href="/contact#size-guide" class="link-underline hover:text-ivory">Size guide</a></li>
+        <li><a href="/about" class="link-underline hover:text-ivory">Our story</a></li>
+        <li><a href="/contact" class="link-underline hover:text-ivory">Contact</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="border-t border-ivory/10">
+    <div class="container-x flex flex-col gap-2 py-6 text-xs text-ivory/60 sm:flex-row sm:justify-between">
+      <p>© {year} {site.name}. All rights reserved.</p>
+      <p>Made with care in our own workshop.</p>
+    </div>
+  </div>
+</footer>

@@ -1,0 +1,24 @@
+---
+import type { GetStaticPaths } from 'astro';
+import ShopView from '../../components/ShopView.astro';
+import { catalog, categoriesOf, categoryLabel, genders, type Category, type Gender } from '../../config/catalog';
+import Base from '../../layouts/Base.astro';
+import { getProducts } from '../../lib/products';
+
+export const getStaticPaths = (() =>
+  genders.flatMap((gender) => categoriesOf(gender).map((category) => ({ params: { gender, category } })))) satisfies GetStaticPaths;
+
+const gender = Astro.params.gender as Gender;
+const category = Astro.params.category as Category;
+const { label, categories } = catalog[gender];
+const title = categoryLabel(gender, category);
+const products = await getProducts({ gender, category });
+const links = [
+  { label: `All ${label.toLowerCase()}`, href: `/${gender}` },
+  ...Object.entries(categories).map(([key, l]) => ({ label: l, href: `/${gender}/${key}`, current: key === category })),
+];
+---
+
+<Base title={`${title} for ${label}`} description={`Shop ${title.toLowerCase()} for ${label.toLowerCase()} from Zeya, made in our own workshop and ordered directly on WhatsApp.`}>
+  <ShopView eyebrow={`${label} / ${title}`} title={title} products={products} links={links} />
+</Base>

@@ -1,0 +1,74 @@
+---
+import { Image } from 'astro:assets';
+import hero2 from '../assets/brand/hero-2.jpg';
+import workshop from '../assets/brand/workshop.jpg';
+import Base from '../layouts/Base.astro';
+
+// Placeholder copy — replace with the real story.
+const values = [
+  { title: 'Craft first', text: 'Every pattern is cut and every seam is stitched by our own team, with checks at each step.' },
+  { title: 'Honest fabrics', text: 'Cotton, linen, silk blends and rayon chosen for how they feel and wear — not just how they photograph.' },
+  { title: 'Fair pricing', text: 'Selling directly means no distributor margins. The savings go to you.' },
+  { title: 'Made to last', text: 'Reinforced seams, colour-fast dyes and finishing that holds up wash after wash.' },
+];
+---
+
+<Base title="Our story" description="Zeya is a clothing manufacturer bringing workshop-made sarees, kurtis, shirts and essentials directly to you.">
+  <section class="container-x pt-10 pb-16 sm:pt-16">
+    <p class="eyebrow animate-fade">Our story</p>
+    <h1 class="mt-4 max-w-4xl text-5xl leading-[1.05] sm:text-7xl">
+      <span class="reveal-line"><span style="--i:0">From our workshop</span></span>
+      <span class="reveal-line"><span style="--i:1" class="text-terracotta italic">straight to you.</span></span>
+    </h1>
+  </section>
+
+  <section class="container-x grid gap-12 pb-20 lg:grid-cols-12 lg:gap-16">
+    <div class="overflow-hidden rounded-[2rem] bg-sand lg:col-span-7" data-reveal>
+      <Image src={workshop} alt="" widths={[600, 900, 1200]} sizes="(min-width: 1024px) 55vw, 92vw" class="aspect-4/3 w-full object-cover" />
+    </div>
+    <div class="space-y-5 leading-relaxed text-muted lg:col-span-5 lg:pt-10" data-reveal style="--i:1">
+      <p class="font-serif text-2xl leading-snug text-espresso">
+        For years, the clothes we made reached people through other shops, other labels, other price tags.
+      </p>
+      <p>
+        Zeya is our way of changing that. We design, cut, stitch and finish every piece in our own unit — men's shirts, tees and trousers, and women's sarees, kurtis and western
+        wear.
+      </p>
+      <p>
+        Instead of a complicated checkout, we kept things personal. You browse here, send us your order on WhatsApp, and talk to the people who actually make your clothes.
+      </p>
+      <p class="text-xs italic">This is placeholder copy — the real Zeya story goes here.</p>
+    </div>
+  </section>
+
+  <section class="bg-cream py-20 sm:py-28">
+    <div class="container-x">
+      <h2 class="max-w-xl text-4xl sm:text-5xl" data-reveal>What we stand for</h2>
+      <div class="mt-14 grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
+        {
+          values.map((v, i) => (
+            <div class="border-t border-espresso/15 pt-6" data-reveal style={`--i:${i}`}>
+              <span class="text-gold">✦</span>
+              <h3 class="mt-4 text-2xl">{v.title}</h3>
+              <p class="mt-2 text-sm leading-relaxed text-muted">{v.text}</p>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="container-x grid items-center gap-12 py-20 sm:py-28 lg:grid-cols-2">
+    <div data-reveal>
+      <h2 class="text-4xl sm:text-5xl">Come see the collection</h2>
+      <p class="mt-4 max-w-md text-muted">New pieces arrive every few weeks. Find your favourite and we'll take care of the rest.</p>
+      <div class="mt-8 flex flex-wrap gap-3">
+        <a href="/women" class="btn btn-primary">Shop Women</a>
+        <a href="/men" class="btn btn-outline">Shop Men</a>
+      </div>
+    </div>
+    <div class="mx-auto w-3/4 overflow-hidden rounded-[2rem] bg-sand lg:w-2/3" data-reveal style="--i:1">
+      <Image src={hero2} alt="" widths={[400, 600, 800]} sizes="(min-width: 1024px) 30vw, 70vw" class="aspect-4/5 w-full object-cover" />
+    </div>
+  </section>
+</Base>

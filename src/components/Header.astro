@@ -1,0 +1,101 @@
+---
+import { catalog, genders } from '../config/catalog';
+import { nav } from '../config/site';
+import Wordmark from './Wordmark.astro';
+
+const path = Astro.url.pathname.replace(/\/$/, '') || '/';
+const current = (href: string) => (path === href || path.startsWith(`${href}/`) ? 'page' : undefined);
+
+const left = nav.slice(0, 3);
+const right = nav.slice(3);
+---
+
+<div class="bg-espresso py-2 text-center text-[0.65rem] font-medium tracking-[0.2em] text-ivory/90 uppercase sm:text-[0.7rem]">
+  <span class="hidden sm:inline">Made in our own workshop <span class="mx-2 text-gold">✦</span></span> Order directly on WhatsApp
+</div>
+
+<header
+  data-header
+  class="group sticky top-0 z-40 border-b border-transparent transition-[background-color,border-color] duration-500 data-scrolled:border-line data-scrolled:bg-ivory/85 data-scrolled:backdrop-blur-md"
+>
+  <div class="container-x grid h-18 grid-cols-[1fr_auto_1fr] items-center transition-[height] duration-500 group-data-scrolled:h-15">
+    <div class="flex items-center gap-8">
+      <button type="button" data-menu-open class="-ml-2 rounded-full p-2 hover:bg-sand lg:hidden" aria-label="Open menu">
+        <svg viewBox="0 0 24 24" class="size-6" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M4 8h16M4 16h10"></path></svg>
+      </button>
+      <nav class="hidden items-center gap-8 text-sm lg:flex" aria-label="Shop">
+        {left.map((l) => <a href={l.href} class="link-underline py-1" aria-current={current(l.href)}>{l.label}</a>)}
+      </nav>
+    </div>
+
+    <a href="/" class="transition-transform duration-500 group-data-scrolled:scale-90" aria-label="Zeya home">
+      <Wordmark class="text-2xl sm:text-[1.7rem]" />
+    </a>
+
+    <div class="flex items-center justify-end gap-8">
+      <nav class="hidden items-center gap-8 text-sm lg:flex" aria-label="Company">
+        {right.map((l) => <a href={l.href} class="link-underline py-1" aria-current={current(l.href)}>{l.label}</a>)}
+      </nav>
+      <button type="button" data-cart-open class="relative -mr-2 rounded-full p-2 hover:bg-sand" aria-label="Open bag">
+        <svg viewBox="0 0 24 24" class="size-6" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M5 8h14l-1.2 12H6.2L5 8z"></path><path d="M9 8V6.5a3 3 0 016 0V8"></path></svg>
+        <span data-cart-count class="absolute top-0.5 right-0 hidden min-w-4.5 rounded-full bg-terracotta px-1 text-center text-[0.65rem] leading-4.5 font-bold text-ivory">0</span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- Mobile menu -->
+<dialog id="menu" class="drawer drawer-left" aria-label="Menu">
+  <div class="flex h-full flex-col px-6 pt-5 pb-8">
+    <div class="flex items-center justify-between">
+      <Wordmark class="text-xl" />
+      <button type="button" data-dialog-close class="-mr-2 rounded-full p-2 hover:bg-sand" aria-label="Close menu">
+        <svg viewBox="0 0 24 24" class="size-6" fill="none" stroke="currentColor" stroke-width="1.4"><path d="M6 6l12 12M18 6L6 18"></path></svg>
+      </button>
+    </div>
+    <nav class="mt-12 flex flex-col gap-1" aria-label="Main">
+      {
+        nav.map((l, i) => (
+          <a href={l.href} data-dialog-close class="menu-link font-serif text-4xl font-light" style={`--i:${i}`} aria-current={current(l.href)}>
+            {l.label}
+          </a>
+        ))
+      }
+    </nav>
+    <div class="mt-10 grid grid-cols-2 gap-6 border-t border-line pt-8 text-sm">
+      {
+        genders.map((g) => (
+          <div>
+            <p class="eyebrow mb-3">{catalog[g].label}</p>
+            <ul class="space-y-2">
+              {Object.entries(catalog[g].categories).map(([key, label]) => (
+                <li>
+                  <a href={`/${g}/${key}`} data-dialog-close class="text-muted hover:text-espresso">
+                    {label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))
+      }
+    </div>
+  </div>
+</dialog>
+
+<style>
+  .menu-link {
+    padding-block: 0.35rem;
+    transition: color 0.3s;
+  }
+  .menu-link:hover,
+  .menu-link[aria-current='page'] {
+    color: var(--color-terracotta);
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    dialog[open] .menu-link {
+      animation: var(--animate-fade);
+      animation-delay: calc(var(--i) * 60ms + 150ms);
+    }
+  }
+</style>

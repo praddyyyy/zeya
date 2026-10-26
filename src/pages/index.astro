@@ -1,0 +1,207 @@
+---
+import { Image } from 'astro:assets';
+import categoryMen from '../assets/brand/category-men.jpg';
+import categoryWomen from '../assets/brand/category-women.jpg';
+import workshop from '../assets/brand/workshop.jpg';
+import Hero from '../components/Hero.astro';
+import HowToOrder from '../components/HowToOrder.astro';
+import ProductCard from '../components/ProductCard.astro';
+import WhatsAppIcon from '../components/WhatsAppIcon.astro';
+import { catalog, genders } from '../config/catalog';
+import Base from '../layouts/Base.astro';
+import { getProducts } from '../lib/products';
+import { enquiryUrl } from '../scripts/whatsapp';
+
+const products = await getProducts();
+const newArrivals = products.filter((p) => p.data.newArrival).slice(0, 8);
+// Kept disjoint from new arrivals so each product's shared-element transition name is unique on the page.
+const featured = products.filter((p) => p.data.featured && !p.data.newArrival).slice(0, 4);
+
+const tiles = [
+  { gender: 'women' as const, image: categoryWomen },
+  { gender: 'men' as const, image: categoryMen },
+];
+const ticker = genders.flatMap((g) => Object.values(catalog[g].categories));
+const promises = [
+  { title: 'Made in-house', text: 'Cut, stitched and finished in our own workshop — never outsourced.' },
+  { title: 'Factory-direct prices', text: 'No middlemen, so you pay for the garment, not the markup.' },
+  { title: 'Personal service', text: 'Real people on WhatsApp to help with sizes, colours and custom requests.' },
+];
+---
+
+<Base>
+  <Hero />
+
+  <!-- Ticker -->
+  <div class="overflow-hidden border-y border-line bg-cream py-5" aria-hidden="true">
+    <div class="flex w-max animate-marquee hover:[animation-play-state:paused]">
+      {
+        [0, 1].map(() => (
+          <div class="flex shrink-0 items-center">
+            {[...ticker, ...ticker].map((t) => (
+              <span class="flex items-center font-serif text-2xl font-light italic sm:text-3xl">
+                <span class="px-8">{t}</span>
+                <span class="text-base text-gold not-italic">✦</span>
+              </span>
+            ))}
+          </div>
+        ))
+      }
+    </div>
+  </div>
+
+  <!-- Shop by gender -->
+  <section class="container-x py-20 sm:py-28">
+    <div class="grid gap-4 sm:grid-cols-2 sm:gap-6">
+      {
+        tiles.map(({ gender, image }, i) => (
+          <a href={`/${gender}`} class="group relative block overflow-hidden rounded-[2rem] bg-sand" data-reveal style={`--i:${i}`}>
+            <Image
+              src={image}
+              alt=""
+              widths={[480, 720, 960]}
+              sizes="(min-width: 640px) 45vw, 92vw"
+              class="aspect-4/5 w-full object-cover transition-transform duration-1500 ease-out-expo group-hover:scale-105 sm:aspect-[4/4.6]"
+            />
+            <div class="absolute inset-0 bg-linear-to-t from-espresso/60 via-espresso/0 to-transparent" />
+            <div class="absolute inset-x-0 bottom-0 flex items-end justify-between gap-4 p-7 text-ivory sm:p-9">
+              <div>
+                <p class="text-[0.7rem] font-semibold tracking-[0.22em] uppercase opacity-80">Collection</p>
+                <h2 class="mt-1 text-5xl sm:text-6xl">{catalog[gender].label}</h2>
+                <p class="mt-2 max-w-xs text-sm opacity-85">{catalog[gender].blurb}</p>
+              </div>
+              <span class="grid size-12 shrink-0 place-items-center rounded-full bg-ivory text-espresso transition-transform duration-500 ease-out-expo group-hover:-rotate-45">
+                <svg viewBox="0 0 24 24" class="size-5" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 12h14M13 6l6 6-6 6" /></svg>
+              </span>
+            </div>
+          </a>
+        ))
+      }
+    </div>
+    <nav class="mt-8 flex flex-wrap justify-center gap-2" data-reveal aria-label="Categories">
+      {
+        genders.flatMap((g) =>
+          Object.entries(catalog[g].categories).map(([key, label]) => (
+            <a href={`/${g}/${key}`} class="chip">
+              {label}
+            </a>
+          )),
+        )
+      }
+    </nav>
+  </section>
+
+  <!-- New arrivals -->
+  {
+    newArrivals.length > 0 && (
+      <section class="pb-20 sm:pb-28">
+        <div class="container-x flex items-end justify-between gap-6" data-reveal>
+          <div>
+            <p class="eyebrow">Just in</p>
+            <h2 class="mt-3 text-4xl sm:text-5xl">New arrivals</h2>
+          </div>
+          <a href="/shop" class="link-underline text-sm whitespace-nowrap">
+            View all
+          </a>
+        </div>
+        <div class="container-x mt-10">
+          <div class="no-scrollbar -mx-4 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 sm:-mx-6 sm:gap-6 sm:px-6 lg:mx-0 lg:grid lg:grid-cols-4 lg:overflow-visible lg:px-0">
+            {newArrivals.map((p, i) => (
+              <div class="w-[68%] shrink-0 snap-start sm:w-[40%] lg:w-auto lg:nth-[n+5]:hidden">
+                <ProductCard product={p} index={i} sizes="(min-width: 1024px) 25vw, 68vw" />
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  <!-- Story -->
+  <section class="bg-cream">
+    <div class="container-x grid items-center gap-12 py-20 sm:py-28 lg:grid-cols-2 lg:gap-20">
+      <div class="overflow-hidden rounded-[2rem] bg-sand" data-reveal>
+        <Image src={workshop} alt="" widths={[480, 720, 960]} sizes="(min-width: 1024px) 45vw, 92vw" class="aspect-4/5 w-full object-cover lg:aspect-square" />
+      </div>
+      <div>
+        <div data-reveal>
+          <p class="eyebrow">Direct from the maker</p>
+          <h2 class="mt-3 text-4xl leading-tight sm:text-5xl">
+            We make every piece ourselves — <span class="text-terracotta italic">so you get more for less.</span>
+          </h2>
+          <p class="mt-6 leading-relaxed text-muted">
+            Zeya began as a small manufacturing unit supplying stores. Today we bring the same craftsmanship straight to you: honest fabrics, careful finishing and
+            prices without the middlemen.
+          </p>
+        </div>
+        <ul class="mt-10 space-y-6">
+          {
+            promises.map((p, i) => (
+              <li class="flex gap-5 border-t border-line pt-6" data-reveal style={`--i:${i + 1}`}>
+                <span class="mt-1 text-gold">✦</span>
+                <div>
+                  <h3 class="font-sans text-base font-semibold tracking-normal">{p.title}</h3>
+                  <p class="mt-1 text-sm text-muted">{p.text}</p>
+                </div>
+              </li>
+            ))
+          }
+        </ul>
+        <a href="/about" class="link-underline mt-10 inline-block text-sm font-semibold" data-reveal>Read our story</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Featured -->
+  {
+    featured.length > 0 && (
+      <section class="container-x py-20 sm:py-28">
+        <div class="flex items-end justify-between gap-6" data-reveal>
+          <div>
+            <p class="eyebrow">Loved by our customers</p>
+            <h2 class="mt-3 text-4xl sm:text-5xl">Bestsellers</h2>
+          </div>
+          <a href="/shop" class="link-underline text-sm whitespace-nowrap">
+            Shop all
+          </a>
+        </div>
+        <div class="mt-10 grid grid-cols-2 gap-x-4 gap-y-12 sm:gap-x-6 lg:grid-cols-4">
+          {featured.map((p, i) => <ProductCard product={p} index={i} />)}
+        </div>
+      </section>
+    )
+  }
+
+  <div class="border-t border-line">
+    <HowToOrder />
+  </div>
+
+  <!-- CTA -->
+  <section class="container-x pb-20 sm:pb-28">
+    <div class="relative overflow-hidden rounded-[2rem] bg-terracotta px-6 py-16 text-center text-ivory sm:px-12 sm:py-20" data-reveal>
+      <div class="cta-glow pointer-events-none absolute -top-1/2 left-1/2 size-[36rem] -translate-x-1/2 rounded-full bg-gold/30 blur-3xl"></div>
+      <div class="relative">
+        <h2 class="text-4xl sm:text-5xl">Looking for something specific?</h2>
+        <p class="mx-auto mt-4 max-w-lg text-ivory/85">
+          Custom sizes, bulk family orders or a colour you don't see here — message us and we'll make it happen.
+        </p>
+        <a href={enquiryUrl()} target="_blank" rel="noopener" class="btn mt-8 bg-ivory text-espresso hover:bg-espresso hover:text-ivory">
+          <WhatsAppIcon /> Chat on WhatsApp
+        </a>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  @media (prefers-reduced-motion: no-preference) {
+    .cta-glow {
+      animation: drift 12s ease-in-out infinite alternate;
+    }
+  }
+  @keyframes drift {
+    to {
+      transform: translate(-30%, 30%);
+    }
+  }
+</style>
